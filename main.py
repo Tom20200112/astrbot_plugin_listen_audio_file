@@ -29,6 +29,7 @@ from .audio_core import (
     ask_model,
     fetch_bytes,
     is_audio_name,
+    is_local_audio_file,
     sniff_audio_ext,
     to_small_mp3,
 )
@@ -138,7 +139,7 @@ class ListenAudioFile(Star):
             self._copy_voice(rec, comp)
 
     def _copy_voice(self, rec: AudioRecord, comp: Comp.Record) -> None:
-        src = next((str(p) for p in (comp.path, comp.file) if p and os.path.isfile(str(p))), "")
+        src = next((str(p) for p in (comp.path, comp.file) if p and is_local_audio_file(str(p))), "")
         if not src:
             return
         try:
@@ -301,7 +302,7 @@ class ListenAudioFile(Star):
                     return r
         rec = AudioRecord(name=VOICE_LABEL, url=_http(comp.url), sender=sender, ts=time.time(),
                           group_id=event.get_group_id() or "", kind="voice", msg_id=msg_id)
-        src = next((str(p) for p in (comp.path, comp.file) if p and os.path.isfile(str(p))), "")
+        src = next((str(p) for p in (comp.path, comp.file) if p and is_local_audio_file(str(p))), "")
         if src:
             rec.local_path = src  # AstrBot 预处理下好的临时文件，这次事件里还在
         elif msg_id:
@@ -343,7 +344,7 @@ class ListenAudioFile(Star):
                     if got.get("base64"):
                         return base64.b64decode(str(got["base64"]))
                     path = str(got.get("file") or "")
-                    if path and os.path.isfile(path):
+                    if is_local_audio_file(path):  # 只读确实是音频的本地文件
                         return await fetch_bytes(path, self._max_bytes)
                     if _http(got.get("url")):
                         return await fetch_bytes(got["url"], self._max_bytes, allow_private=self._allow_private)
