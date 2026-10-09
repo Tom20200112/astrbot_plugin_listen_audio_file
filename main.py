@@ -214,8 +214,10 @@ class ListenAudioFile(Star):
             for r in recs
         )
         req.system_prompt = (req.system_prompt or "") + (
-            "\n\n[音频] 这个聊天最近有人发了音频（音频文件不会自动听；语音条最多自动转成文字，听不出唱得怎么样）：\n"
-            f"{lines}\n想知道里面是什么、或有人让你听/点评时，用 listen_audio_file 工具去听（听语音条时 kind 填「语音条」）。"
+            "\n\n[音频] 这个聊天最近有人发了下面这些音频：\n"
+            f"{lines}\n"
+            "音频文件不会自动听；语音条最多自动转成文字，听不出唱得怎么样。"
+            "想知道里面是什么，或者有人让你听、让你点评时，用 listen_audio_file 工具去听。听语音条时，kind 填「语音条」。"
         )
 
     # ---------- 3. 真正去听 ----------
@@ -349,7 +351,7 @@ class ListenAudioFile(Star):
                 errors.append(str(exc))
             except Exception as exc:
                 errors.append(f"找 QQ 端重取语音失败：{exc}")
-        raise AudioError(errors[-1] if errors else "这条语音条取不回来了（可能太久了）")
+        raise AudioError(errors[-1] if errors else "这条语音条取不回来了，可能是发得太久了")
 
     async def _get_bytes(self, event: AstrMessageEvent, rec: AudioRecord) -> bytes:
         if rec.kind == "voice":
@@ -374,7 +376,7 @@ class ListenAudioFile(Star):
                 errors.append(str(exc))
             except Exception as exc:
                 errors.append(f"群文件重取失败：{exc}")
-        raise AudioError(errors[-1] if errors else "拿不到这个文件（可能已被删除或过期）")
+        raise AudioError(errors[-1] if errors else "拿不到这个文件，可能已被删除或过期")
 
     async def _listen(self, event: AstrMessageEvent, file_name: str, focus: str, kind: str) -> tuple[AudioRecord, str]:
         rec, matched = self._pick(event, file_name, kind)
@@ -383,13 +385,13 @@ class ListenAudioFile(Star):
             logger.info(f"[听音频文件] 文件名「{file_name[:40]}」对不上，当成想重点听的内容")
             focus = file_name
         if rec is None:
-            raise AudioError("这个聊天里最近没有看到音频文件或语音条（插件装好之后发的才记得住）")
+            raise AudioError("这个聊天里最近没有看到音频文件或语音条。插件只记得装好之后发的")
         raw = await self._get_bytes(event, rec)
         fname = rec.name
         if rec.kind == "voice":
             ext = sniff_audio_ext(raw)
             if ext == ".silk":
-                raise AudioError("这条语音是 QQ 原始的 silk 格式，转不了")
+                raise AudioError("这条语音还是 QQ 原始的 silk 格式，插件转不了")
             fname = f"voice{ext}"
         audio, fmt = await to_small_mp3(raw, fname, int(self._cfg("max_seconds", 600)))
         prompt = DEFAULT_PROMPT

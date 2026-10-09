@@ -46,7 +46,7 @@
     "description": "收到音频文件或语音条就先存一份",
     "type": "bool",
     "default": true,
-    "hint": "QQ 文件链接一两天就会过期、群文件也可能被删，语音条的临时文件 AstrBot 用完就删，先存一份以后才听得到。"
+    "hint": "QQ 文件的下载链接大约 13 小时就失效、群文件也可能被删；语音条的临时文件 AstrBot 用完就删。先存一份，以后才听得到。"
   },
   "keep_days": {
     "description": "存的副本留几天",
