@@ -1,0 +1,68 @@
+{
+  "api_key": {
+    "description": "阿里云百炼 API Key",
+    "type": "string",
+    "default": "",
+    "secret": true,
+    "obvious_hint": true,
+    "hint": "sk- 开头那串。去阿里云百炼控制台「API Key」页面创建。不填插件用不了。"
+  },
+  "base_url": {
+    "description": "接口地址",
+    "type": "string",
+    "default": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "hint": "一般不用改。如果百炼控制台给你的调用地址不一样（比如带 cn-beijing.maas 的），就填控制台上那个，以 /compatible-mode/v1 结尾。Key 会发到这个地址，别填不可信的。"
+  },
+  "model": {
+    "description": "听音频用的模型",
+    "type": "string",
+    "default": "qwen3.5-omni-flash",
+    "hint": "一般不用改。要听得更细可以换 qwen3.5-omni-plus（更慢更贵）。"
+  },
+  "include_voice": {
+    "description": "也能听语音条",
+    "type": "bool",
+    "default": true,
+    "hint": "收到语音条会在本地存一份副本（留「存的副本留几天」那么久），有人让 bot 听时才发给百炼。关掉就只管音频文件。"
+  },
+  "max_seconds": {
+    "description": "最长听多少秒",
+    "type": "int",
+    "default": 600,
+    "hint": "超过的部分不听。10 分钟足够听一整首歌。"
+  },
+  "max_file_mb": {
+    "description": "文件大小上限（MB）",
+    "type": "int",
+    "default": 40
+  },
+  "timeout_seconds": {
+    "description": "等模型回答最多几秒",
+    "type": "int",
+    "default": 90,
+    "hint": "别超过 100，AstrBot 的工具调用 120 秒就会超时。"
+  },
+  "cache_on_arrival": {
+    "description": "收到音频文件或语音条就先存一份",
+    "type": "bool",
+    "default": true,
+    "hint": "QQ 文件链接一两天就会过期、群文件也可能被删，语音条的临时文件 AstrBot 用完就删，先存一份以后才听得到。"
+  },
+  "keep_days": {
+    "description": "存的副本留几天",
+    "type": "int",
+    "default": 7
+  },
+  "hint_in_prompt": {
+    "description": "提醒 bot 最近有人发了音频",
+    "type": "bool",
+    "default": true,
+    "hint": "AstrBot 本身看不到「文件」消息、听不出语音条唱得怎么样。打开后，bot 被叫到时会知道最近 6 小时有谁发过音频文件或语音条。"
+  },
+  "allow_private_network": {
+    "description": "允许从本机/内网地址下载音频",
+    "type": "bool",
+    "default": false,
+    "hint": "只在本机测试时打开。平时开着的话，有人伪造链接就能让 bot 去访问你的内网。"
+  }
+}
